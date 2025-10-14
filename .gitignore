@@ -1,0 +1,45 @@
+# Environment configuration files
+.env
+.env.local
+.env.development
+.env.production
+
+# Docker and container-related files
+docker-compose.override.yml
+docker-compose.prod.yml
+
+# Home Assistant configuration (should be managed separately or backed up)
+config/**/*
+!config/.gitkeep
+
+# SSL certificates (if any)
+ssl/
+*.pem
+*.key
+*.crt
+
+# Log files
+*.log
+logs/
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+tmp/
+temp/
+
+# Database files (if any)
+*.db
+*.sqlite

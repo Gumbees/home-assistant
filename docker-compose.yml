@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  homeassistant:
+    image: "ghcr.io/home-assistant/home-assistant:${HOMEASSISTANT_VERSION}"
+    volumes:
+      - homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - ${EXTERNAL_NETWORK_IOT}
+      - ${EXTERNAL_NETWORK_TRAEFIK}
+    labels:
+      # Traefik Public Domain Configuration
+      - "traefik.enable=true"
+      - "traefik.docker.network=${EXTERNAL_NETWORK_TRAEFIK}"
+      - "traefik.http.routers.homeassistant-public.rule=Host(`${PUBLIC_DOMAIN}`)"
+      - "traefik.http.routers.homeassistant-public.entrypoints=${TRAEFIK_ENTRYPOINT_WEB_SECURE}"
+      - "traefik.http.routers.homeassistant-public.service=homeassistant-service"
+      - "traefik.http.routers.homeassistant-public.tls=true"
+      - "traefik.http.routers.homeassistant-public.tls.certresolver=letsencrypt"
+      
+      # Traefik Private Domain Configuration
+      - "traefik.http.routers.homeassistant-private.rule=Host(`${PRIVATE_DOMAIN}`)"
+      - "traefik.http.routers.homeassistant-private.entrypoints=${TRAEFIK_ENTRYPOINT_WEB}"
+      - "traefik.http.routers.homeassistant-private.service=homeassistant-service"
+      
+      # Service Configuration
+      - "traefik.http.services.homeassistant-service.loadbalancer.server.port=${HOMEASSISTANT_PORT}"
+      
+      # Middleware for Security
+      - "traefik.http.routers.homeassistant-public.middlewares=homeassistant-security@docker"
+      - "traefik.http.middlewares.homeassistant-security.headers.sslredirect=true"
+      - "traefik.http.middlewares.homeassistant-security.headers.stsincludesubdomains=true"
+      - "traefik.http.middlewares.homeassistant-security.headers.stspreload=true"
+      - "traefik.http.middlewares.homeassistant-security.headers.stsseconds=31536000"
+      - "traefik.http.middlewares.homeassistant-security.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+    environment:
+      - TZ=America/New_York
+
+networks:
+  iot:
+    external: true
+    name: ${EXTERNAL_NETWORK_IOT}
+  traefik_public:
+    external: true
+    name: ${EXTERNAL_NETWORK_TRAEFIK}
+
+volumes:
+  homeassistant_config:
+    driver: local
