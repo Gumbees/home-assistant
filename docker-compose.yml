@@ -41,7 +41,7 @@ services:
       - TZ=America/New_York
 
 networks:
-  default:
+  stack:
     external: false
   iot:
     external: true
