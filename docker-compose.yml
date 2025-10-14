@@ -11,6 +11,7 @@ services:
     networks:
       - home
       - traefik_public
+      - stack
     labels:
       # Traefik Public Domain Configuration
       - "traefik.enable=true"
@@ -40,11 +41,26 @@ services:
     environment:
       - TZ=America/New_York
 
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped
+    networks:
+      - stack
+    deploy:
+      replicas: ${CLOUDFLARED_REPLICA_COUNT}
+    depends_on:
+      - homeassistant
+
 networks:
   home:
     external: true
   traefik_public:
     external: true
+  stack:
+    
 
 volumes:
   homeassistant_config:
