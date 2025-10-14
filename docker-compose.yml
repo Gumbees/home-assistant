@@ -54,20 +54,39 @@ services:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     restart: unless-stopped
     networks:
-      - stack
+      - home
     deploy:
       replicas: ${CLOUDFLARED_REPLICA_COUNT}
     depends_on:
       - homeassistant
+
+  matter-server:
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    restart: unless-stopped
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - matter_data:/data
+      - /run/dbus:/run/dbus:ro
+    networks:
+      - home
+    ports:
+      - "${MATTER_SERVER_PORT}:5580"
+    environment:
+      - MATTER_SERVER_LOG_LEVEL=${MATTER_SERVER_LOG_LEVEL}
 
 networks:
   home:
     external: true
   traefik_public:
     external: true
-  stack:
-    
 
 volumes:
   homeassistant_config:
     driver: local
+  matter_data:
+    driver: local
+  stack:
+    
+
+

@@ -1,6 +1,6 @@
 # Home Assistant Docker Stack with Traefik
 
-This Docker Compose stack sets up Home Assistant with Traefik reverse proxy support for both public and private domain access.
+This Docker Compose stack sets up Home Assistant with Traefik reverse proxy support for both public and private domain access, plus optional Cloudflared tunnel and Matter Server for Matter device support.
 
 ## Prerequisites
 
@@ -79,6 +79,63 @@ All configuration is managed through the `.env` file:
 
 - **Public Access**: https://your-public-domain
 - **Private Access**: http://your-private-domain:8123
+- **Matter Server**: Accessible on port 5580 for Home Assistant Matter integration
+
+## Matter Server Integration
+
+The stack includes a Matter Server that allows Home Assistant to connect to and manage Matter devices.
+
+### Setup in Home Assistant:
+1. **Access Home Assistant** via your domain
+2. **Go to Settings** → **Devices & Services**
+3. **Add Integration** → Search for "Matter (BETA)"
+4. **Server URL**: Use `matter-server:5580` (internal Docker network)
+5. **Complete setup** to start adding Matter devices
+
+### Matter Server Features:
+- **Automatic Discovery**: Discovers Matter devices on your network
+- **Thread Support**: Full Thread network support for Matter devices
+- **Persistent Storage**: Matter data stored in Docker volume
+- **Integration Ready**: Pre-configured to work with Home Assistant
+
+### Matter Device Setup:
+1. **Commission devices** through Home Assistant's Matter integration
+2. **Use Thread**: Enable Thread border router in Home Assistant if needed
+3. **Device Control**: All Matter devices will appear in Home Assistant automatically
+
+## Reverse Proxy Configuration
+
+After starting the stack, you'll need to configure Home Assistant to work properly with Traefik as a reverse proxy:
+
+### Method 1: Environment Variables (Automatic)
+The Docker Compose stack includes environment variables that should automatically configure Home Assistant for reverse proxy usage:
+- `HASS_HTTP_TRUSTED_PROXY_*` - Trusts Docker and private networks
+- `HASS_HTTP_USE_X_FORWARDED_FOR=true` - Enables forwarded header support
+
+### Method 2: Configuration File (Manual)
+If you see reverse proxy errors in the logs, add this to your Home Assistant `configuration.yaml`:
+
+```yaml
+# HTTP Configuration for Reverse Proxy (Traefik)
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/12    # Docker networks
+    - 192.168.0.0/16   # Private networks
+    - 10.0.0.0/8       # Private networks
+    - 127.0.0.1        # Localhost
+    - ::1              # IPv6 localhost
+```
+
+### How to Edit Configuration:
+1. **Access Home Assistant** via your domain
+2. **Go to Settings** → **Add-ons** → **File editor** (install if needed)
+3. **Edit** `configuration.yaml` and add the HTTP section above
+4. **Restart** Home Assistant
+
+### Common Reverse Proxy Errors:
+- `"A request from a reverse proxy was received from X.X.X.X, but your HTTP integration is not set-up for reverse proxies"`
+- **Solution**: Add the HTTP configuration above to trust your Traefik proxy
 
 ## Troubleshooting
 
@@ -86,3 +143,4 @@ All configuration is managed through the `.env` file:
 2. **View logs**: `docker-compose logs homeassistant`
 3. **Verify networks**: `docker network ls`
 4. **Check Traefik configuration**: Ensure Traefik is properly configured with the required entrypoints and certificate resolver
+5. **Reverse proxy errors**: See "Reverse Proxy Configuration" section above
