@@ -41,6 +41,11 @@ services:
 
     environment:
       - TZ=America/New_York
+      # Reverse Proxy Configuration for Traefik
+      - HASS_HTTP_TRUSTED_PROXY_1=172.16.0.0/12
+      - HASS_HTTP_TRUSTED_PROXY_2=192.168.0.0/16
+      - HASS_HTTP_TRUSTED_PROXY_3=10.0.0.0/8
+      - HASS_HTTP_USE_X_FORWARDED_FOR=true
 
   cloudflared:
     image: cloudflare/cloudflared:latest
