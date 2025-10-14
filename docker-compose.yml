@@ -10,7 +10,7 @@ services:
     privileged: true
     networks:
       - traefik_pulic
-      - ${EXTERNAL_NETWORK_TRAEFIK}
+      - iot
     labels:
       # Traefik Public Domain Configuration
       - "traefik.enable=true"
