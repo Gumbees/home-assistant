@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     privileged: true
     networks:
-      - ${EXTERNAL_NETWORK_IOT}
+      - traefik_pulic
       - ${EXTERNAL_NETWORK_TRAEFIK}
     labels:
       # Traefik Public Domain Configuration
@@ -41,6 +41,8 @@ services:
       - TZ=America/New_York
 
 networks:
+  default:
+    external: false
   iot:
     external: true
     name: ${EXTERNAL_NETWORK_IOT}
