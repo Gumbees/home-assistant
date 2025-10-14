@@ -9,12 +9,12 @@ services:
     restart: unless-stopped
     privileged: true
     networks:
-      - traefik_pulic
-      - iot
+      - home
+      - traefik_public
     labels:
       # Traefik Public Domain Configuration
       - "traefik.enable=true"
-      - "traefik.docker.network=${EXTERNAL_NETWORK_TRAEFIK}"
+      - "traefik.docker.network=traefik_public"
       - "traefik.http.routers.homeassistant-public.rule=Host(`${PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.homeassistant-public.entrypoints=${TRAEFIK_ENTRYPOINT_WEB_SECURE}"
       - "traefik.http.routers.homeassistant-public.service=homeassistant-service"
@@ -41,14 +41,10 @@ services:
       - TZ=America/New_York
 
 networks:
-  stack:
-    external: false
-  iot:
+  home:
     external: true
-    name: ${EXTERNAL_NETWORK_IOT}
   traefik_public:
     external: true
-    name: ${EXTERNAL_NETWORK_TRAEFIK}
 
 volumes:
   homeassistant_config:
