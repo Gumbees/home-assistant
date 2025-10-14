@@ -24,8 +24,9 @@ services:
       
       # Traefik Private Domain Configuration
       - "traefik.http.routers.homeassistant-private.rule=Host(`${PRIVATE_DOMAIN}`)"
-      - "traefik.http.routers.homeassistant-private.entrypoints=${TRAEFIK_ENTRYPOINT_WEB}"
+      - "traefik.http.routers.homeassistant-private.entrypoints=${TRAEFIK_ENTRYPOINT_WEB_SECURE}"
       - "traefik.http.routers.homeassistant-private.service=homeassistant-service"
+      - "traefik.http.routers.homeassistant-private.tls=true"
       
       # Service Configuration
       - "traefik.http.services.homeassistant-service.loadbalancer.server.port=${HOMEASSISTANT_PORT}"
