@@ -13,8 +13,9 @@ services:
       - NET_ADMIN
       - NET_RAW
     networks:
-      - home
-      - traefik_public
+      home:
+        ipv4_address: 192.168.67.4
+      traefik_public:
     labels:
       # Traefik Public Domain Configuration
       - "traefik.enable=true"
