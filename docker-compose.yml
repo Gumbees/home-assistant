@@ -9,6 +9,9 @@ services:
       - /run/dbus:/run/dbus:ro # Mount the D-Bus socket
     restart: unless-stopped
     privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
     networks:
       - home
       - traefik_public
