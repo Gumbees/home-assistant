@@ -74,7 +74,10 @@ services:
     volumes:
       - matter_data:/data
       - /run/dbus:/run/dbus:ro
-    network_mode: host
+    networks:
+      - home
+    ports:
+      - "5580:5580"
     environment:
       - MATTER_SERVER_LOG_LEVEL=${MATTER_SERVER_LOG_LEVEL}
 
