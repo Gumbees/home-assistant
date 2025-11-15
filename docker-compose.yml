@@ -6,6 +6,7 @@ services:
     volumes:
       - homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro # Mount the D-Bus socket
     restart: unless-stopped
     privileged: true
     networks:
