@@ -72,10 +72,30 @@ services:
     environment:
       - MATTER_SERVER_LOG_LEVEL=${MATTER_SERVER_LOG_LEVEL}
 
+  scrypted:
+    image: ghcr.io/koush/scrypted:latest
+    container_name: scrypted
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - scrypted_data:/server/volume
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=America/New_York
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+    labels:
+      - com.centurylinklabs.watchtower.scope=scrypted
+
 volumes:
   homeassistant_config:
     driver: local
   matter_data:
+    driver: local
+  scrypted_data:
     driver: local
   stack:
     
