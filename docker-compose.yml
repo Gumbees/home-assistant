@@ -11,13 +11,10 @@ services:
       - /sys/devices:/sys/devices:ro # Device tree access
     restart: unless-stopped
     privileged: true
+    network_mode: host
     cap_add:
       - NET_ADMIN
       - NET_RAW
-    networks:
-      home:
-        ipv4_address: 192.168.67.4
-      traefik_public:
     labels:
       # Traefik Public Domain Configuration
       - "traefik.enable=true"
@@ -59,8 +56,7 @@ services:
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     restart: unless-stopped
-    networks:
-      - home
+    network_mode: host
     deploy:
       replicas: ${CLOUDFLARED_REPLICA_COUNT}
     depends_on:
@@ -69,23 +65,14 @@ services:
   matter-server:
     image: ghcr.io/home-assistant-libs/python-matter-server:stable
     restart: unless-stopped
+    network_mode: host
     security_opt:
       - apparmor:unconfined
     volumes:
       - matter_data:/data
       - /run/dbus:/run/dbus:ro
-    networks:
-      - home
-    ports:
-      - "5580:5580"
     environment:
       - MATTER_SERVER_LOG_LEVEL=${MATTER_SERVER_LOG_LEVEL}
-
-networks:
-  home:
-    external: true
-  traefik_public:
-    external: true
 
 volumes:
   homeassistant_config:
