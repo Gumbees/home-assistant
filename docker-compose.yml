@@ -7,8 +7,6 @@ services:
       - homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro # Mount the D-Bus socket
-      - /sys/class/bluetooth:/sys/class/bluetooth:ro # Bluetooth device access
-      - /sys/devices:/sys/devices:ro # Device tree access
     restart: unless-stopped
     privileged: true
     network_mode: host
